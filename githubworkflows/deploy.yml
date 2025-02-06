@@ -10,18 +10,40 @@ permissions:
   pages: write
   id-token: write  # Required for GitHub Pages deployment
 
+#This is the code if want to do testing inside deploy.yaml file
+#jobs:
+ # test:
+  #  runs-on: ubuntu-latest
+   # steps: 
+    #  - name: Checkout Repository
+     #   uses: actions/checkout@v3
+
+      #- name: Install HTMLHint
+       # run: npm install -g htmlhint  # Install HTMLHint for validation
+
+      #- name: Run HTML Validation
+       # run: htmlhint "**/*.html"  # Scan all HTML files
+
+#This code is doing execute pytest file to do tesing
 jobs:
-  test:
+  test:  # Plan B: Run Pytest
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Install HTMLHint
-        run: npm install -g htmlhint  # Install HTMLHint for validation
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-      - name: Run HTML Validation
-        run: htmlhint "**/*.html"  # Scan all HTML files
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Pytest
+        run: pytest pytest_file  # Run tests
 
   deploy:
     runs-on: ubuntu-latest
